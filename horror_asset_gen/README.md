@@ -13,12 +13,12 @@ python run_app.py
 
 Du kan också använda kommandoraden:
 ```bash
-python generate_assets.py --asset [wall|pipe|plank] --texture [concrete|metal] --effect [grime|rust|blood|none]
+python generate_assets.py --asset [wall|pipe|plank|barrel|crate|beam|floor] --texture [concrete|metal|wood|brick|tile] --effect [grime|rust|blood|rot|slime|none]
 ```
 
 Exempel:
 ```bash
-python generate_assets.py --asset wall --texture concrete --effect grime
+python generate_assets.py --asset crate --texture wood --effect rot
 ```
 
 ## Utdata

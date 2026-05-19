@@ -7,7 +7,11 @@ def validate():
     files = os.listdir(output_dir)
 
     # Check for expected files from samples
-    expected_bases = ["wall_concrete_grime", "pipe_metal_rust"]
+    expected_bases = ["wall_concrete_grime", "pipe_metal_rust", "barrel_metal_slime", "crate_wood_rot"]
+
+    # Generate the new ones first
+    os.system("python generate_assets.py --asset barrel --texture metal --effect slime")
+    os.system("python generate_assets.py --asset crate --texture wood --effect rot")
 
     for base in expected_bases:
         albedo = f"{base}_albedo.png"
