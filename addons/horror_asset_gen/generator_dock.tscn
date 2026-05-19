@@ -1,0 +1,115 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/horror_asset_gen/generator_dock.gd" id="1"]
+
+[node name="Horror Generator" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 400.0
+grow_horizontal = 2
+
+[node name="Title" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Horror Asset Generator"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBox"]
+layout_mode = 2
+
+[node name="AssetTypeLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Asset Type:"
+
+[node name="AssetType" type="OptionButton" parent="VBox"]
+layout_mode = 2
+item_count = 7
+selected = 0
+popup/item_0/text = "wall"
+popup/item_0/id = 0
+popup/item_1/text = "pipe"
+popup/item_1/id = 1
+popup/item_2/text = "plank"
+popup/item_2/id = 2
+popup/item_3/text = "barrel"
+popup/item_3/id = 3
+popup/item_4/text = "crate"
+popup/item_4/id = 4
+popup/item_5/text = "beam"
+popup/item_5/id = 5
+popup/item_6/text = "floor"
+popup/item_6/id = 6
+
+[node name="TextureLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Base Texture:"
+
+[node name="TextureType" type="OptionButton" parent="VBox"]
+layout_mode = 2
+item_count = 5
+selected = 0
+popup/item_0/text = "concrete"
+popup/item_0/id = 0
+popup/item_1/text = "metal"
+popup/item_1/id = 1
+popup/item_2/text = "wood"
+popup/item_2/id = 2
+popup/item_3/text = "brick"
+popup/item_3/id = 3
+popup/item_4/text = "tile"
+popup/item_4/id = 4
+
+[node name="EffectLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Horror Effect:"
+
+[node name="EffectType" type="OptionButton" parent="VBox"]
+layout_mode = 2
+item_count = 6
+selected = 0
+popup/item_0/text = "grime"
+popup/item_0/id = 0
+popup/item_1/text = "rust"
+popup/item_1/id = 1
+popup/item_2/text = "blood"
+popup/item_2/id = 2
+popup/item_3/text = "rot"
+popup/item_3/id = 3
+popup/item_4/text = "slime"
+popup/item_4/id = 4
+popup/item_5/text = "none"
+popup/item_5/id = 5
+
+[node name="AssetNameLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Name:"
+
+[node name="AssetName" type="LineEdit" parent="VBox"]
+layout_mode = 2
+placeholder_text = "optional_name"
+
+[node name="SeedLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Seed:"
+
+[node name="Seed" type="LineEdit" parent="VBox"]
+layout_mode = 2
+placeholder_text = "random if empty"
+
+[node name="Generate" type="Button" parent="VBox"]
+layout_mode = 2
+text = "GENERATE ASSET"
+
+[node name="Status" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Ready"
+autowrap_mode = 2

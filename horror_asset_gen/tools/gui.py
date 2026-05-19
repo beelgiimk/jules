@@ -19,7 +19,7 @@ class HorrorAssetGenGUI:
 
         # Asset Type
         ttk.Label(main_frame, text="Asset Type:").pack(anchor=tk.W, pady=(10, 0))
-        self.asset_type = ttk.Combobox(main_frame, values=["wall", "pipe", "plank", "barrel", "crate", "beam", "floor"], state="readonly")
+        self.asset_type = ttk.Combobox(main_frame, values=["wall", "pipe", "plank", "barrel", "crate", "beam", "floor", "locker", "table", "vent"], state="readonly")
         self.asset_type.set("wall")
         self.asset_type.pack(fill=tk.X, pady=5)
 
@@ -40,8 +40,13 @@ class HorrorAssetGenGUI:
         self.asset_name = ttk.Entry(main_frame)
         self.asset_name.pack(fill=tk.X, pady=5)
 
+        # Seed
+        ttk.Label(main_frame, text="Seed (Optional):").pack(anchor=tk.W, pady=(10, 0))
+        self.asset_seed = ttk.Entry(main_frame)
+        self.asset_seed.pack(fill=tk.X, pady=5)
+
         # PBR Info
-        ttk.Label(main_frame, text="Generates: Albedo, Normal, Roughness, AO", font=("Helvetica", 9, "italic")).pack(pady=5)
+        ttk.Label(main_frame, text="Generates: GLB, .tres, Albedo, Normal, Roughness, AO", font=("Helvetica", 9, "italic")).pack(pady=5)
 
         # Generate Button
         self.gen_btn = ttk.Button(main_frame, text="GENERATE HIGH-END ASSET", command=self.start_generation)
@@ -70,14 +75,20 @@ class HorrorAssetGenGUI:
 
     def generate(self):
         try:
-            m, a, n, r, ao = generate_asset_logic(
+            seed_val = self.asset_seed.get()
+            seed_int = int(seed_val) if seed_val and seed_val.isdigit() else None
+
+            # Fixed unpacking to match generate_asset_logic return (7 values)
+            results = generate_asset_logic(
                 self.asset_type.get(),
                 self.texture_type.get(),
                 self.effect_type.get(),
                 self.asset_name.get(),
+                seed=seed_int,
                 progress_callback=self.update_progress
             )
-            self.root.after(0, lambda: self.finish_generation(f"Success! Saved to output folder."))
+            m, a, n, r, ao, s, mat = results
+            self.root.after(0, lambda: self.finish_generation(f"Success! Seed: {s}"))
         except Exception as e:
             self.root.after(0, lambda: self.finish_generation(f"Error: {str(e)}", error=True))
 

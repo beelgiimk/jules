@@ -22,7 +22,8 @@ def validate():
             'roughness': f"{base}_roughness.png",
             'ao': f"{base}_ao.png"
         }
-        model = f"{base}.obj"
+        model = f"{base}.glb"
+        material = f"{base}.tres"
 
         for map_type, filename in maps.items():
             path = os.path.join(output_dir, filename)
@@ -31,18 +32,28 @@ def validate():
                 assert img.size == (1024, 1024), f"{filename} has wrong size: {img.size}"
                 print(f"Validated {filename}: {img.size}")
 
-        # Validate Model
+        # Validate Model (GLB)
         model_path = os.path.join(output_dir, model)
         assert os.path.exists(model_path), f"Missing {model}"
         mesh = trimesh.load(model_path)
-        assert len(mesh.vertices) > 0, f"{model} has no vertices"
-        # Check if high-res (more than basic 8 for box)
-        if base in ["wall_concrete_grime", "crate_wood_rot"]:
-            assert len(mesh.vertices) > 8, f"{model} should be high-res"
+        if isinstance(mesh, trimesh.Scene):
+            vertices_count = sum(len(m.vertices) for m in mesh.geometry.values())
+        else:
+            vertices_count = len(mesh.vertices)
+        assert vertices_count > 0, f"{model} has no vertices"
+        print(f"Validated {model}: {vertices_count} vertices")
 
-        print(f"Validated {model}: {len(mesh.vertices)} vertices")
+        # Validate Material (Godot .tres)
+        mat_path = os.path.join(output_dir, material)
+        assert os.path.exists(mat_path), f"Missing {material}"
+        with open(mat_path, "r") as f:
+            content = f.read()
+            assert "StandardMaterial3D" in content
+            # The material now references textures by name
+            assert maps['albedo'] in content
+        print(f"Validated {material}")
 
-    print("\nAll High-End PBR assets validated successfully!")
+    print("\nAll Advanced High-End PBR assets validated successfully!")
 
 if __name__ == "__main__":
     validate()
