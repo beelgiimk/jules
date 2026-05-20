@@ -135,7 +135,9 @@ class HorrorEffects:
         img_arr = np.array(image).astype(float)
         mask = np.clip((noise_map - 0.4) * 2, 0, 1)
         for i in range(3): img_arr[:, :, i] *= (1.0 - 0.6 * mask)
-        return Image.fromarray(img_arr.astype(np.uint8))
+        # Grime makes things rougher
+        rough_mod = mask * 0.3
+        return Image.fromarray(img_arr.astype(np.uint8)), rough_mod
 
     @staticmethod
     def apply_rust(image, noise_map):
@@ -143,7 +145,9 @@ class HorrorEffects:
         rust_color = np.array([120, 50, 20])
         mask = np.clip((noise_map - 0.5) * 3, 0, 1)
         for i in range(3): img_arr[:, :, i] = img_arr[:, :, i] * (1 - mask) + rust_color[i] * mask
-        return Image.fromarray(img_arr.astype(np.uint8))
+        # Rust is very rough
+        rough_mod = mask * 0.8
+        return Image.fromarray(img_arr.astype(np.uint8)), rough_mod
 
     @staticmethod
     def apply_blood(image, noise_map):
@@ -151,7 +155,9 @@ class HorrorEffects:
         blood_color = np.array([100, 5, 5])
         mask = np.clip((noise_map - 0.7) * 5, 0, 1)
         for i in range(3): img_arr[:, :, i] = img_arr[:, :, i] * (1 - mask) + blood_color[i] * mask
-        return Image.fromarray(img_arr.astype(np.uint8))
+        # Blood is wet and smooth (low roughness)
+        rough_mod = -mask * 0.9
+        return Image.fromarray(img_arr.astype(np.uint8)), rough_mod
 
     @staticmethod
     def apply_rot(image, noise_map):
@@ -159,7 +165,9 @@ class HorrorEffects:
         rot_color = np.array([30, 40, 15])
         mask = np.clip((noise_map - 0.4) * 2, 0, 1)
         for i in range(3): img_arr[:, :, i] = img_arr[:, :, i] * (1 - mask) + rot_color[i] * mask
-        return Image.fromarray(img_arr.astype(np.uint8))
+        # Rot is slimy/moist
+        rough_mod = -mask * 0.5
+        return Image.fromarray(img_arr.astype(np.uint8)), rough_mod
 
     @staticmethod
     def apply_slime(image, noise_map):
@@ -167,4 +175,6 @@ class HorrorEffects:
         slime_color = np.array([40, 150, 40])
         mask = np.clip((noise_map - 0.6) * 4, 0, 1)
         for i in range(3): img_arr[:, :, i] = img_arr[:, :, i] * (1 - mask) + slime_color[i] * mask
-        return Image.fromarray(img_arr.astype(np.uint8))
+        # Slime is extremely wet
+        rough_mod = -mask * 0.95
+        return Image.fromarray(img_arr.astype(np.uint8)), rough_mod

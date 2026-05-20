@@ -203,11 +203,13 @@ class ModelGenerator:
 
     def generate_godot_material(self, name, maps):
         tres_path = os.path.join(self.output_dir, f"{name}.tres")
+        # Use paths relative to project root (assuming output is in horror_asset_gen/output)
+        base_path = "res://horror_asset_gen/output/"
         tres_content = f"""[gd_resource type="StandardMaterial3D" load_steps=5 format=3]
-[ext_resource type="Texture2D" path="res://{maps['albedo']}" id="1"]
-[ext_resource type="Texture2D" path="res://{maps['normal']}" id="2"]
-[ext_resource type="Texture2D" path="res://{maps['roughness']}" id="3"]
-[ext_resource type="Texture2D" path="res://{maps['ao']}" id="4"]
+[ext_resource type="Texture2D" path="{base_path}{maps['albedo']}" id="1"]
+[ext_resource type="Texture2D" path="{base_path}{maps['normal']}" id="2"]
+[ext_resource type="Texture2D" path="{base_path}{maps['roughness']}" id="3"]
+[ext_resource type="Texture2D" path="{base_path}{maps['ao']}" id="4"]
 [resource]
 albedo_texture = ExtResource("1")
 roughness_texture = ExtResource("3")
@@ -217,3 +219,42 @@ ao_enabled = true
 ao_texture = ExtResource("4")"""
         with open(tres_path, "w") as f: f.write(tres_content)
         return tres_path
+
+    def generate_godot_scene(self, name, asset_type, model_filename, material_filename):
+        tscn_path = os.path.join(self.output_dir, f"{name}.tscn")
+        base_path = "res://horror_asset_gen/output/"
+
+        # Heuristic for collision shape
+        shape_type = "BoxShape3D"
+        shape_extents = "1, 1, 1"
+
+        if asset_type in ["pipe", "barrel", "meathook"]:
+            shape_type = "CylinderShape3D"
+            if asset_type == "pipe": shape_extents = "height = 2.0\nradius = 0.05"
+            elif asset_type == "barrel": shape_extents = "height = 1.0\nradius = 0.45"
+            else: shape_extents = "height = 0.6\nradius = 0.1"
+        elif asset_type == "wall": shape_extents = "size = Vector3(2, 2, 0.1)"
+        elif asset_type == "crate": shape_extents = "size = Vector3(1, 1, 1)"
+        elif asset_type == "floor": shape_extents = "size = Vector3(4, 0.05, 4)"
+        elif asset_type == "table": shape_extents = "size = Vector3(1.5, 0.8, 0.8)"
+        else: shape_extents = "size = Vector3(1, 1, 1)"
+
+        tscn_content = f"""[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="{base_path}{model_filename}" id="1"]
+[ext_resource type="Material" path="{base_path}{material_filename}" id="2"]
+
+[sub_resource type="{shape_type}" id="1"]
+{shape_extents}
+
+[node name="{name}" type="StaticBody3D"]
+
+[node name="Mesh" parent="." instance=ExtResource("1")]
+surface_material_override/0 = ExtResource("2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("1")
+"""
+        with open(tscn_path, "w") as f:
+            f.write(tscn_content)
+        return tscn_path

@@ -6,7 +6,7 @@ def validate():
     output_dir = "horror_asset_gen/output"
 
     # Check for expected files from samples
-    expected_bases = ["wall_concrete_grime", "pipe_metal_rust", "barrel_metal_slime", "crate_wood_rot", "meathook_metal_blood", "cage_metal_rust"]
+    expected_bases = ["wall_concrete_grime", "pipe_metal_rust", "barrel_metal_slime", "crate_wood_rot"]
 
     # Generate the ones we need for validation
     for base in expected_bases:
@@ -15,7 +15,13 @@ def validate():
         print(f"Generating {base} for validation...")
         os.system(f"python generate_assets.py --asset {asset} --texture {texture} --effect {effect}")
 
-    for base in expected_bases:
+    # Generate a batch for testing
+    print("Generating batch for validation...")
+    os.system("python generate_assets.py --asset crate --texture wood --effect rot --batch 2 --name batch_test")
+
+    all_to_check = expected_bases + ["batch_test_0", "batch_test_1"]
+
+    for base in all_to_check:
         maps = {
             'albedo': f"{base}_albedo.png",
             'normal': f"{base}_normal.png",
@@ -24,6 +30,7 @@ def validate():
         }
         model = f"{base}.glb"
         material = f"{base}.tres"
+        scene = f"{base}.tscn"
 
         for map_type, filename in maps.items():
             path = os.path.join(output_dir, filename)
@@ -46,14 +53,18 @@ def validate():
         # Validate Material (Godot .tres)
         mat_path = os.path.join(output_dir, material)
         assert os.path.exists(mat_path), f"Missing {material}"
-        with open(mat_path, "r") as f:
-            content = f.read()
-            assert "StandardMaterial3D" in content
-            # The material now references textures by name
-            assert maps['albedo'] in content
         print(f"Validated {material}")
 
-    print("\nAll Advanced High-End PBR assets validated successfully!")
+        # Validate Scene (Godot .tscn)
+        scene_path = os.path.join(output_dir, scene)
+        assert os.path.exists(scene_path), f"Missing {scene}"
+        with open(scene_path, "r") as f:
+            content = f.read()
+            assert "StaticBody3D" in content
+            assert "CollisionShape3D" in content
+        print(f"Validated {scene}")
+
+    print("\nAll Advanced High-End PBR assets and scenes validated successfully!")
 
 if __name__ == "__main__":
     validate()

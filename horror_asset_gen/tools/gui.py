@@ -40,16 +40,21 @@ class HorrorAssetGenGUI:
         self.asset_name = ttk.Entry(main_frame)
         self.asset_name.pack(fill=tk.X, pady=5)
 
+        # Batch Count
+        ttk.Label(main_frame, text="Batch Count:").pack(anchor=tk.W, pady=(10, 0))
+        self.batch_count = tk.Spinbox(main_frame, from_=1, to=10, width=5)
+        self.batch_count.pack(anchor=tk.W, pady=5)
+
         # Seed
         ttk.Label(main_frame, text="Seed (Optional):").pack(anchor=tk.W, pady=(10, 0))
         self.asset_seed = ttk.Entry(main_frame)
         self.asset_seed.pack(fill=tk.X, pady=5)
 
         # PBR Info
-        ttk.Label(main_frame, text="Generates: GLB, .tres, Albedo, Normal, Roughness, AO", font=("Helvetica", 9, "italic")).pack(pady=5)
+        ttk.Label(main_frame, text="Generates: .tscn, GLB, .tres, PBR Maps", font=("Helvetica", 9, "italic")).pack(pady=5)
 
         # Generate Button
-        self.gen_btn = ttk.Button(main_frame, text="GENERATE HIGH-END ASSET", command=self.start_generation)
+        self.gen_btn = ttk.Button(main_frame, text="GENERATE ASSET BATCH", command=self.start_generation)
         self.gen_btn.pack(pady=20)
 
         self.status_var = tk.StringVar(value="Ready")
@@ -77,18 +82,23 @@ class HorrorAssetGenGUI:
         try:
             seed_val = self.asset_seed.get()
             seed_int = int(seed_val) if seed_val and seed_val.isdigit() else None
+            batch = int(self.batch_count.get())
 
-            # Fixed unpacking to match generate_asset_logic return (7 values)
-            results = generate_asset_logic(
-                self.asset_type.get(),
-                self.texture_type.get(),
-                self.effect_type.get(),
-                self.asset_name.get(),
-                seed=seed_int,
-                progress_callback=self.update_progress
-            )
-            m, a, n, r, ao, s, mat = results
-            self.root.after(0, lambda: self.finish_generation(f"Success! Seed: {s}"))
+            for i in range(batch):
+                suffix = f"_{i}" if batch > 1 else ""
+                current_name = (self.asset_name.get() or f"{self.asset_type.get()}") + suffix
+                current_seed = seed_int if (i == 0 or seed_int is not None) else None
+
+                results = generate_asset_logic(
+                    self.asset_type.get(),
+                    self.texture_type.get(),
+                    self.effect_type.get(),
+                    current_name,
+                    seed=current_seed,
+                    progress_callback=self.update_progress
+                )
+
+            self.root.after(0, lambda: self.finish_generation(f"Batch generation successful! Check output folder."))
         except Exception as e:
             self.root.after(0, lambda: self.finish_generation(f"Error: {str(e)}", error=True))
 
