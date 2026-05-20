@@ -19,7 +19,7 @@ class HorrorAssetGenGUI:
 
         # Asset Type
         ttk.Label(main_frame, text="Asset Type:").pack(anchor=tk.W, pady=(10, 0))
-        self.asset_type = ttk.Combobox(main_frame, values=["wall", "pipe", "plank", "barrel", "crate", "beam", "floor", "locker", "table", "vent"], state="readonly")
+        self.asset_type = ttk.Combobox(main_frame, values=["wall", "pipe", "plank", "barrel", "crate", "beam", "floor", "locker", "table", "vent", "meathook", "cage"], state="readonly")
         self.asset_type.set("wall")
         self.asset_type.pack(fill=tk.X, pady=5)
 

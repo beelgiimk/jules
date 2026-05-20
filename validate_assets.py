@@ -6,7 +6,7 @@ def validate():
     output_dir = "horror_asset_gen/output"
 
     # Check for expected files from samples
-    expected_bases = ["wall_concrete_grime", "pipe_metal_rust", "barrel_metal_slime", "crate_wood_rot"]
+    expected_bases = ["wall_concrete_grime", "pipe_metal_rust", "barrel_metal_slime", "crate_wood_rot", "meathook_metal_blood", "cage_metal_rust"]
 
     # Generate the ones we need for validation
     for base in expected_bases:

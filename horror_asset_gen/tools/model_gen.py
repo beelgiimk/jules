@@ -105,6 +105,59 @@ class ModelGenerator:
             parts.append(slat)
         return trimesh.util.concatenate(parts)
 
+    def create_meathook(self, size=0.5):
+        # Create a curved meathook using a torus segment or a bent cylinder
+        # For simplicity, we'll use a series of small cylinders to form a hook shape
+        parts = []
+        # Vertical shaft
+        shaft = trimesh.creation.cylinder(radius=0.02, height=size)
+        shaft.apply_translation([0, size/2, 0])
+        parts.append(shaft)
+        # Curve
+        for i in range(8):
+            angle = (i / 7.0) * np.pi
+            segment = trimesh.creation.cylinder(radius=0.02, height=0.1)
+            # Rotate and position
+            segment.apply_transform(trimesh.transformations.rotation_matrix(angle, [0, 0, 1]))
+            segment.apply_translation([0.1 * np.sin(angle), -0.1 * np.cos(angle), 0])
+            parts.append(segment)
+        # Pointy end
+        tip = trimesh.creation.cone(radius=0.02, height=0.1)
+        tip.apply_translation([0.1, 0.1, 0])
+        parts.append(tip)
+        return trimesh.util.concatenate(parts)
+
+    def create_cage(self, size=1.0):
+        # Create a barred cage
+        parts = []
+        frame_thickness = 0.04
+        # Corner pillars
+        for x in [-1, 1]:
+            for z in [-1, 1]:
+                pillar = trimesh.creation.cylinder(radius=frame_thickness/2, height=size)
+                pillar.apply_translation([x*(size/2), 0, z*(size/2)])
+                parts.append(pillar)
+        # Bars
+        bar_count = 5
+        for i in range(bar_count):
+            offset = -size/2 + (i+1)*(size/(bar_count+1))
+            for face in ['back', 'left', 'right']:
+                bar = trimesh.creation.cylinder(radius=0.01, height=size)
+                if face == 'back': bar.apply_translation([offset, 0, -size/2])
+                elif face == 'left':
+                    bar.apply_translation([-size/2, 0, offset])
+                elif face == 'right':
+                    bar.apply_translation([size/2, 0, offset])
+                parts.append(bar)
+        # Top and bottom frames
+        for y in [-size/2, size/2]:
+            for angle in [0, np.pi/2]:
+                h_bar = trimesh.creation.box(extents=[size, frame_thickness, frame_thickness])
+                h_bar.apply_transform(trimesh.transformations.rotation_matrix(angle, [0, 1, 0]))
+                h_bar.apply_translation([0, y, 0])
+                parts.append(h_bar)
+        return trimesh.util.concatenate(parts)
+
     def apply_vertex_displacement(self, mesh, strength=0.01):
         if len(mesh.vertices) == 0: return mesh
         normals = mesh.vertex_normals

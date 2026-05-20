@@ -83,12 +83,14 @@ def generate_asset_logic(asset_type, texture_type, effect_type, name=None, seed=
         mesh = mg.create_table()
     elif asset_type == "vent":
         mesh = mg.create_vent()
+    elif asset_type == "meathook":
+        mesh = mg.create_meathook()
+    elif asset_type == "cage":
+        mesh = mg.create_cage()
     else:
         raise ValueError(f"Unknown asset: {asset_type}")
 
     if progress_callback: progress_callback("Finalizing mesh and UVs...", 85)
-    # Note: Vertex displacement is now integrated inside create_ methods where appropriate
-    # but we can apply extra if needed.
     mg.apply_improved_uv(mesh)
 
     maps = {
@@ -107,7 +109,7 @@ def generate_asset_logic(asset_type, texture_type, effect_type, name=None, seed=
 
 def main():
     parser = argparse.ArgumentParser(description="Professional Horror Asset Generator for Godot")
-    parser.add_argument("--asset", choices=["wall", "pipe", "plank", "barrel", "crate", "beam", "floor", "locker", "table", "vent"], required=True)
+    parser.add_argument("--asset", choices=["wall", "pipe", "plank", "barrel", "crate", "beam", "floor", "locker", "table", "vent", "meathook", "cage"], required=True)
     parser.add_argument("--texture", choices=["concrete", "metal", "wood", "brick", "tile"], required=True)
     parser.add_argument("--effect", choices=["grime", "rust", "blood", "rot", "slime", "none"], default="none")
     parser.add_argument("--name", help="Custom name")
